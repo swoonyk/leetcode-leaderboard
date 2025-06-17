@@ -6,7 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 
 interface FilterControlsProps {
   filters: LeaderboardFilters
-  onFiltersChange: (filters: LeaderboardFilters) => void
+  onFilterChange: (filters: Partial<LeaderboardFilters>) => void
 }
 
 const TOPIC_TAGS = [
@@ -36,9 +36,9 @@ const TOPIC_TAGS = [
   "Sliding Window",
 ]
 
-export default function FilterControls({ filters, onFiltersChange }: FilterControlsProps) {
+export default function FilterControls({ filters, onFilterChange }: FilterControlsProps) {
   const updateFilters = (updates: Partial<LeaderboardFilters>) => {
-    onFiltersChange({ ...filters, ...updates })
+    onFilterChange(updates)
   }
 
   const toggleTag = (tag: string) => {

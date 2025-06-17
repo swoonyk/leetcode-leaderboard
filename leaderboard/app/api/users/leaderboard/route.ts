@@ -6,7 +6,7 @@ import { COMPETITION_START } from '@/lib/constants';
 import { lc, getProblemDifficulties } from '@/lib/leetcode';
 import type { UserProfile, Submission } from 'leetcode-query';
 
-const TEN_MINUTES_IN_SECONDS = 10 * 60;
+const ONE_HOUR_IN_SECONDS = 60 * 60;
 
 interface SubmissionWithDifficulty extends Submission {
   difficulty?: string;
@@ -63,7 +63,7 @@ const getStatsForUser = async (dbUser: { id: string, username: string, joinedDat
 
     if (cachedStats) {
         const lastUpdated = new Date(cachedStats.updatedAt);
-        if ((Date.now() - lastUpdated.getTime()) / 1000 < TEN_MINUTES_IN_SECONDS) {
+        if ((Date.now() - lastUpdated.getTime()) / 1000 < ONE_HOUR_IN_SECONDS) {
             return cachedStats.data as User;
         }
     }
