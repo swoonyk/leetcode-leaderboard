@@ -1,0 +1,1 @@
+export const COMPETITION_START = new Date("2025-06-01T00:00:00Z").getTime(); 

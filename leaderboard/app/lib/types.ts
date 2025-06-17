@@ -1,24 +1,28 @@
 export interface User {
   id: string
   username: string
-  totalSolved: number
-  easySolved: number
-  mediumSolved: number
-  hardSolved: number
-  acceptanceRate: number
-  recentSolves: number
-  lastActive: string
-  tagStats: Record<string, number>
-  recentProblems: RecentProblem[]
+  ranking: number
+  joinedDate: string
+  competitionSolves: number
+  easySinceCutoff: number
+  mediumSinceCutoff: number
+  hardSinceCutoff: number
+  acceptanceRateSinceCutoff: number
+  lastActive: number
+  tagStats: { [key: string]: number }
+  recentProblems: {
+    title: string
+    titleSlug: string
+    timestamp: string
+    statusDisplay: string
+  }[]
   streak: number
   maxStreak: number
-  ranking: number
-  contestRating?: number
-  joinedDate: string
-  favoriteTopics: string[]
+  contestRating: number | null
+  favoriteTopics: any[]
 }
 
-export type RankingType = "total" | "recent" | "accuracy"
+export type RankingType = "competition" | "accuracy"
 
 export interface LeaderboardFilters {
   difficulty: "all" | "easy" | "medium" | "hard"

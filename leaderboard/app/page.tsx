@@ -1,13 +1,53 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Leaderboard from "./components/Leaderboard"
-import AddUserModal from "./components/AddUserModal"
+import ManageUsersModal from "./components/ManageUsersModal"
 import { Trophy, TrendingUp, Target, UserPlus } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { useLeaderboardStats } from "./hooks/useLeaderboardStats"
+import { fetchGlobalLeaderboard } from "./lib/api"
+import type { User, LeaderboardFilters } from "./lib/types"
 
 export default function HomePage() {
-  const [isAddUserModalOpen, setIsAddUserModalOpen] = useState(false)
+  const [isManageUsersModalOpen, setIsManageUsersModalOpen] = useState(false)
+  const [users, setUsers] = useState<User[] | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [filters, setFilters] = useState<LeaderboardFilters>({
+    ranking: "competition",
+    difficulty: "all",
+    tags: [],
+  })
+  const stats = useLeaderboardStats(users)
+
+  const loadLeaderboard = async () => {
+    setLoading(true)
+    try {
+      const data = await fetchGlobalLeaderboard(filters)
+      setUsers(data)
+    } catch (error) {
+      console.error("Failed to fetch leaderboard", error)
+      setUsers([])
+    }
+    setLoading(false)
+  }
+
+  useEffect(() => {
+    loadLeaderboard()
+  }, [filters])
+
+  useEffect(() => {
+    window.addEventListener("userAdded", loadLeaderboard)
+    window.addEventListener("userRemoved", loadLeaderboard)
+    return () => {
+      window.removeEventListener("userAdded", loadLeaderboard)
+      window.removeEventListener("userRemoved", loadLeaderboard)
+    }
+  }, [filters])
+
+  const handleFilterChange = (newFilters: Partial<LeaderboardFilters>) => {
+    setFilters(prev => ({ ...prev, ...newFilters }))
+  }
 
   return (
     <div>
@@ -19,12 +59,12 @@ export default function HomePage() {
           </div>
           <div className="flex items-center space-x-4">
             <Button
-              onClick={() => setIsAddUserModalOpen(true)}
+              onClick={() => setIsManageUsersModalOpen(true)}
               variant="secondary"
               className="bg-white bg-opacity-20 hover:bg-opacity-30 text-white border-white border-opacity-30"
             >
               <UserPlus className="h-4 w-4 mr-2" />
-              Add User
+              Manage Users
             </Button>
             <Trophy className="h-16 w-16 text-yellow-300" />
           </div>
@@ -36,28 +76,34 @@ export default function HomePage() {
               <Trophy className="h-5 w-5" />
               <span className="text-sm">Total Problems</span>
             </div>
-            <div className="text-2xl font-bold mt-1">2,847</div>
+            <div className="text-2xl font-bold mt-1">
+              {loading ? "Loading..." : stats.totalCompetitionSolves.toLocaleString()}
+            </div>
           </div>
           <div className="bg-white bg-opacity-10 rounded-lg p-4">
             <div className="flex items-center space-x-2">
               <TrendingUp className="h-5 w-5" />
-              <span className="text-sm">Problems Solved Today</span>
+              <span className="text-sm">Problems Solved Recently</span>
             </div>
-            <div className="text-2xl font-bold mt-1">3,291</div>
+            <div className="text-2xl font-bold mt-1">
+              {loading ? "Loading..." : stats.problemsSolvedToday.toLocaleString()}
+            </div>
           </div>
           <div className="bg-white bg-opacity-10 rounded-lg p-4">
             <div className="flex items-center space-x-2">
               <Target className="h-5 w-5" />
               <span className="text-sm">Average Accuracy</span>
             </div>
-            <div className="text-2xl font-bold mt-1">84.2%</div>
+            <div className="text-2xl font-bold mt-1">
+              {loading ? "Loading..." : `${stats.averageAccuracy.toFixed(1)}%`}
+            </div>
           </div>
         </div>
       </div>
 
-      <Leaderboard />
+      <Leaderboard users={users} loading={loading} onFilterChange={handleFilterChange} filters={filters} />
 
-      <AddUserModal isOpen={isAddUserModalOpen} onClose={() => setIsAddUserModalOpen(false)} />
+      <ManageUsersModal isOpen={isManageUsersModalOpen} onClose={() => setIsManageUsersModalOpen(false)} />
     </div>
   )
 }

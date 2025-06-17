@@ -56,8 +56,7 @@ export default function FilterControls({ filters, onFiltersChange }: FilterContr
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="total">Total Solved</SelectItem>
-              <SelectItem value="recent">Recent (7 days)</SelectItem>
+              <SelectItem value="competition">Competition Solves</SelectItem>
               <SelectItem value="accuracy">Accuracy Rate</SelectItem>
             </SelectContent>
           </Select>

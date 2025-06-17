@@ -1,9 +1,8 @@
 import { NextResponse } from 'next/server';
-import { LeetCode } from 'leetcode-query';
 import { prisma } from '@/lib/prisma';
 import { z } from "zod";
 
-const addUserSchema = z.object({
+const removeUserSchema = z.object({
   username: z.string().min(1, { message: "Username cannot be empty." }),
   accessCode: z.string().min(1, { message: "Access code is required." }),
 });
@@ -11,7 +10,7 @@ const addUserSchema = z.object({
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const parsed = addUserSchema.safeParse(body);
+    const parsed = removeUserSchema.safeParse(body);
 
     if (!parsed.success) {
       return NextResponse.json({ success: false, message: parsed.error.errors[0].message }, { status: 400 });
@@ -24,31 +23,24 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: false, message: "Invalid access code." }, { status: 403 });
     }
 
-    // Check if user already exists
-    const existingUser = await prisma.user.findUnique({
+    // Find the user to be deleted
+    const userToDelete = await prisma.user.findUnique({
       where: { username },
     });
 
-    if (existingUser) {
-      return NextResponse.json({ success: false, message: "User already exists in the leaderboard." }, { status: 409 });
+    if (!userToDelete) {
+      return NextResponse.json({ success: false, message: "User not found." }, { status: 404 });
     }
 
-    const lc = new LeetCode();
-    const leetcodeUser = await lc.user(username);
+    // Delete user and their cached stats in a transaction
+    await prisma.$transaction([
+      prisma.statsCache.deleteMany({ where: { username } }),
+      prisma.user.delete({ where: { username } }),
+    ]);
 
-    if (!leetcodeUser || !leetcodeUser.matchedUser) {
-        return NextResponse.json({ error: 'User not found on LeetCode' }, { status: 404 });
-    }
-
-    const user = await prisma.user.create({
-      data: {
-        username: username,
-      },
-    });
-
-    return NextResponse.json({ success: true, message: `User "${username}" added successfully!` });
+    return NextResponse.json({ success: true, message: `User "${username}" has been removed.` });
   } catch (error) {
-    console.error("Error adding user:", error);
+    console.error("Error removing user:", error);
     return NextResponse.json({ success: false, message: "An internal server error occurred." }, { status: 500 });
   }
-}
+} 

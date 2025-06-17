@@ -1,179 +1,134 @@
-import type { User, LeaderboardFilters } from "./types"
+import type { User, LeaderboardFilters, Room } from './types';
+import { toast } from "sonner"
+import type { RankingType } from "./types"
 
-const mockUsers: User[] = [
-  {
-    id: "1",
-    username: "CodeMaster2024",
-    totalSolved: 1247,
-    easySolved: 423,
-    mediumSolved: 612,
-    hardSolved: 212,
-    acceptanceRate: 87.3,
-    recentSolves: 23,
-    lastActive: "2024-01-15T10:30:00Z",
-    tagStats: { Array: 156, "Dynamic Programming": 89, String: 134 },
-    streak: 15,
-    maxStreak: 47,
-    ranking: 1,
-    contestRating: 2156,
-    joinedDate: "2022-03-15T00:00:00Z",
-    favoriteTopics: ["Dynamic Programming", "Array", "Graph"],
-    recentProblems: [
-      {
-        id: "1",
-        title: "Two Sum",
-        difficulty: "Easy",
-        solvedAt: "2024-01-15T09:30:00Z",
-        timeSpent: 12,
-        attempts: 1,
-        tags: ["Array", "Hash Table"],
-      },
-      {
-        id: "2",
-        title: "Longest Palindromic Substring",
-        difficulty: "Medium",
-        solvedAt: "2024-01-14T15:45:00Z",
-        timeSpent: 35,
-        attempts: 3,
-        tags: ["String", "Dynamic Programming"],
-      },
-      {
-        id: "3",
-        title: "Merge k Sorted Lists",
-        difficulty: "Hard",
-        solvedAt: "2024-01-14T11:20:00Z",
-        timeSpent: 67,
-        attempts: 2,
-        tags: ["Linked List", "Divide and Conquer", "Heap"],
-      },
-    ],
-  },
-  {
-    id: "2",
-    username: "AlgoNinja",
-    totalSolved: 1156,
-    easySolved: 389,
-    mediumSolved: 578,
-    hardSolved: 189,
-    acceptanceRate: 91.2,
-    recentSolves: 18,
-    lastActive: "2024-01-14T15:45:00Z",
-    tagStats: { Array: 142, "Dynamic Programming": 95, String: 128 },
-    streak: 8,
-    maxStreak: 32,
-    ranking: 2,
-    contestRating: 1987,
-    joinedDate: "2022-01-20T00:00:00Z",
-    favoriteTopics: ["Binary Search", "Two Pointers", "Sliding Window"],
-    recentProblems: [
-      {
-        id: "4",
-        title: "Binary Search",
-        difficulty: "Easy",
-        solvedAt: "2024-01-14T14:20:00Z",
-        timeSpent: 8,
-        attempts: 1,
-        tags: ["Array", "Binary Search"],
-      },
-      {
-        id: "5",
-        title: "Container With Most Water",
-        difficulty: "Medium",
-        solvedAt: "2024-01-13T16:30:00Z",
-        timeSpent: 28,
-        attempts: 2,
-        tags: ["Array", "Two Pointers"],
-      },
-    ],
-  },
-  {
-    id: "3",
-    username: "DataStructureGuru",
-    totalSolved: 1089,
-    easySolved: 356,
-    mediumSolved: 534,
-    hardSolved: 199,
-    acceptanceRate: 84.7,
-    recentSolves: 31,
-    lastActive: "2024-01-15T09:20:00Z",
-    tagStats: { Array: 138, "Dynamic Programming": 78, String: 119 },
-    streak: 12,
-    maxStreak: 28,
-    ranking: 3,
-    contestRating: 1834,
-    joinedDate: "2022-05-10T00:00:00Z",
-    favoriteTopics: ["Tree", "Graph", "Heap"],
-    recentProblems: [],
-  },
-  {
-    id: "4",
-    username: "BinarySearchPro",
-    totalSolved: 967,
-    easySolved: 312,
-    mediumSolved: 489,
-    hardSolved: 166,
-    acceptanceRate: 89.1,
-    recentSolves: 15,
-    lastActive: "2024-01-13T18:10:00Z",
-    tagStats: { Array: 125, "Dynamic Programming": 67, String: 102 },
-    streak: 5,
-    maxStreak: 21,
-    ranking: 4,
-    joinedDate: "2023-01-15T00:00:00Z",
-    favoriteTopics: ["Binary Search", "Sorting"],
-    recentProblems: [],
-  },
-  {
-    id: "5",
-    username: "RecursionQueen",
-    totalSolved: 834,
-    easySolved: 278,
-    mediumSolved: 412,
-    hardSolved: 144,
-    acceptanceRate: 92.5,
-    recentSolves: 27,
-    lastActive: "2024-01-15T12:00:00Z",
-    tagStats: { Array: 108, "Dynamic Programming": 89, String: 95 },
-    streak: 9,
-    maxStreak: 19,
-    ranking: 5,
-    joinedDate: "2023-03-20T00:00:00Z",
-    favoriteTopics: ["Recursion", "Backtracking"],
-    recentProblems: [],
-  },
-]
+// The base URL for our API routes
+const API_BASE_URL = '/api';
 
 export async function fetchGlobalLeaderboard(filters: LeaderboardFilters): Promise<User[]> {
-  await new Promise((resolve) => setTimeout(resolve, 1000))
+  const params = new URLSearchParams();
+  params.append('ranking', filters.ranking);
+  // Note: The new backend doesn't support difficulty/tag filtering on the main leaderboard endpoint directly.
+  // The frontend can implement client-side filtering if needed, but for now, we pass the main ranking parameter.
 
-  let filteredUsers = [...mockUsers]
-
-  if (filters.difficulty !== "all") {
-    filteredUsers = filteredUsers.filter((user) => {
-      const difficultyCount =
-        filters.difficulty === "easy"
-          ? user.easySolved
-          : filters.difficulty === "medium"
-            ? user.mediumSolved
-            : user.hardSolved
-      return difficultyCount > 0
-    })
+  const response = await fetch(`${API_BASE_URL}/users/leaderboard?${params.toString()}`);
+  if (!response.ok) {
+    throw new Error('Failed to fetch leaderboard');
   }
+  return response.json();
+}
 
-  if (filters.tags.length > 0) {
-    filteredUsers = filteredUsers.filter((user) => filters.tags.some((tag) => user.tagStats[tag] > 0))
-  }
+export async function addUser(username: string, accessCode: string): Promise<{ success: boolean; message: string }> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/users/add`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, accessCode }),
+    });
 
-  filteredUsers.sort((a, b) => {
-    switch (filters.ranking) {
-      case "recent":
-        return b.recentSolves - a.recentSolves
-      case "accuracy":
-        return b.acceptanceRate - a.acceptanceRate
-      default:
-        return b.totalSolved - a.totalSolved
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || "Failed to add user");
     }
-  })
+    return data;
+  } catch (error: any) {
+    throw new Error(error.message || "Failed to add user");
+  }
+}
 
-  return filteredUsers
+export async function login(username: string): Promise<{ success: true; username: string }> {
+    const response = await fetch(`${API_BASE_URL}/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username }),
+    });
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Login failed');
+    }
+    return response.json();
+}
+
+export async function logout(): Promise<{ success: true }> {
+    const response = await fetch(`${API_BASE_URL}/auth/logout`, {
+        method: 'POST',
+    });
+    if (!response.ok) {
+        throw new Error('Logout failed');
+    }
+    return response.json();
+}
+
+export async function fetchUserStats(username: string): Promise<User> {
+    const response = await fetch(`${API_BASE_URL}/users/${username}/stats`);
+    if (!response.ok) {
+        throw new Error('Failed to fetch user stats');
+    }
+    return response.json();
+}
+
+export async function fetchRooms(): Promise<Room[]> {
+    const response = await fetch(`${API_BASE_URL}/rooms`);
+    if (!response.ok) {
+        throw new Error('Failed to fetch rooms');
+    }
+    return response.json();
+}
+
+export async function createRoom(): Promise<Room> {
+    const response = await fetch(`${API_BASE_URL}/rooms`, {
+        method: 'POST',
+    });
+    if (!response.ok) {
+        throw new Error('Failed to create room');
+    }
+    return response.json();
+}
+
+export async function joinRoom(code: string): Promise<Room> {
+    const response = await fetch(`${API_BASE_URL}/rooms/join`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code }),
+    });
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to join room');
+    }
+    return response.json();
+}
+
+export async function fetchRoomLeaderboard(roomId: string, ranking: string): Promise<User[]> {
+    const response = await fetch(`${API_BASE_URL}/rooms/${roomId}/leaderboard?ranking=${ranking}`);
+    if (!response.ok) {
+        throw new Error('Failed to fetch room leaderboard');
+    }
+    return response.json();
+}
+
+export async function removeUser(username: string, accessCode: string): Promise<{ success: boolean; message: string }> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/users/remove`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, accessCode }),
+    });
+
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data.message || 'Failed to remove user');
+    }
+    return data;
+  } catch (error: any) {
+    throw new Error(error.message || 'Failed to remove user');
+  }
+}
+
+export async function getRooms(): Promise<Room[]> {
+  const response = await fetch(`${API_BASE_URL}/rooms`)
+  if (!response.ok) {
+    throw new Error('Failed to fetch rooms');
+  }
+  return response.json();
 }

@@ -1,69 +1,62 @@
 "use client"
 
 import { useState } from "react"
-import { useLeaderboard } from "../hooks/useLeaderboard"
 import UserCard from "./UserCard"
-import UserProfileModal from "./UserProfileModal"
 import FilterControls from "./FilterControls"
-import LoadingSpinner from "./LoadingSpinner"
-import type { LeaderboardFilters, RankingType, User } from "../lib/types"
+import type { LeaderboardFilters, User } from "../lib/types"
+import UserProfileModal from "./UserProfileModal"
+import { Skeleton } from "@/components/ui/skeleton"
 
-export default function Leaderboard() {
-  const [filters, setFilters] = useState<LeaderboardFilters>({
-    difficulty: "all",
-    tags: [],
-    ranking: "total" as RankingType,
-  })
+interface LeaderboardProps {
+  users: User[] | null
+  loading: boolean
+  filters: LeaderboardFilters
+  onFilterChange: (newFilters: Partial<LeaderboardFilters>) => void
+}
 
+export default function Leaderboard({ users, loading, filters, onFilterChange }: LeaderboardProps) {
   const [selectedUser, setSelectedUser] = useState<User | null>(null)
-  const [isModalOpen, setIsModalOpen] = useState(false)
-
-  const { data: users, loading, error } = useLeaderboard(filters)
 
   const handleUserClick = (user: User) => {
     setSelectedUser(user)
-    setIsModalOpen(true)
   }
 
-  const closeModal = () => {
-    setIsModalOpen(false)
+  const handleCloseModal = () => {
     setSelectedUser(null)
   }
 
-  if (loading) return <LoadingSpinner />
-
-  if (error) {
-    return (
-      <div className="text-center py-12">
-        <p className="text-red-600 mb-4">Failed to load leaderboard</p>
-        <p className="text-gray-500">{error}</p>
-      </div>
-    )
-  }
+  const sortedUsers = users
+    ? [...users].sort((a, b) => {
+        if (filters.ranking === "accuracy") {
+          return b.acceptanceRateSinceCutoff - a.acceptanceRateSinceCutoff
+        }
+        return b.competitionSolves - a.competitionSolves
+      })
+    : []
 
   return (
-    <div className="space-y-6">
-      <FilterControls filters={filters} onFiltersChange={setFilters} />
-
-      <div className="space-y-4">
-        {users?.map((user, index) => (
-          <UserCard
-            key={user.id}
-            user={user}
-            rank={index + 1}
-            rankingType={filters.ranking}
-            onClick={() => handleUserClick(user)}
-          />
-        ))}
-
-        {users?.length === 0 && (
-          <div className="text-center py-12">
-            <p className="text-gray-500">No users found with the current filters</p>
-          </div>
+    <div>
+      <FilterControls filters={filters} onFilterChange={onFilterChange} />
+      <div className="space-y-4 mt-6">
+        {loading && (
+          <>
+            <Skeleton className="h-40 rounded-xl" />
+            <Skeleton className="h-40 rounded-xl" />
+            <Skeleton className="h-40 rounded-xl" />
+          </>
         )}
+        {!loading &&
+          sortedUsers.map((user, index) => (
+            <UserCard
+              key={user.id}
+              user={user}
+              rank={index + 1}
+              rankingType={filters.ranking}
+              onClick={() => handleUserClick(user)}
+            />
+          ))}
       </div>
-
-      {selectedUser && <UserProfileModal user={selectedUser} isOpen={isModalOpen} onClose={closeModal} />}
+      {selectedUser && <UserProfileModal user={selectedUser} isOpen={!!selectedUser} onClose={handleCloseModal} />}
     </div>
   )
 }
