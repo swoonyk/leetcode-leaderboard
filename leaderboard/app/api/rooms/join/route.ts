@@ -1,5 +1,5 @@
 import { NextResponse, type NextRequest } from 'next/server';
-import { getSessionUser } from '../../../lib/session';
+import { getSessionUser } from '@/app/lib/session';
 import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
 

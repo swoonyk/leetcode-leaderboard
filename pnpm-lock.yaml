@@ -1,0 +1,117 @@
+lockfileVersion: '9.0'
+
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
+importers:
+
+  .:
+    dependencies:
+      '@prisma/extension-accelerate':
+        specifier: ^2.0.1
+        version: 2.0.1(@prisma/client@6.10.0)
+      leetcode-query:
+        specifier: ^2.0.0
+        version: 2.0.0
+
+packages:
+
+  '@fetch-impl/cross-fetch@1.0.0':
+    resolution: {integrity: sha512-vNvwtCQ7yruvpYnp1i/4paVi/icrGYx9O4eHNDYorjTAFg78bhitO0l39opJSVfsTKqyWqj3+2+YenoGhZOCJA==}
+    peerDependencies:
+      '@fetch-impl/fetcher': ^1.0.0
+      cross-fetch: '*'
+
+  '@fetch-impl/fetcher@1.0.0':
+    resolution: {integrity: sha512-UPUN9Yfjnk513Vc08iNW8/9L1nSwQMsTx6nOvmjPNfU2Rtbew/2KgAbQDPuoL6PrNgEmEmmyeM29BkcVBpt3gQ==}
+
+  '@prisma/client@6.10.0':
+    resolution: {integrity: sha512-C+3A6sPt8EwUlNwsbT22IoUq0O+wXXA4Sw39UmCATlfa8HVP5r0X/l9xGyELhfSmmO0sjgSAl7qmlCHS6Dkekw==}
+    engines: {node: '>=18.18'}
+    peerDependencies:
+      prisma: '*'
+      typescript: '>=5.1.0'
+    peerDependenciesMeta:
+      prisma:
+        optional: true
+      typescript:
+        optional: true
+
+  '@prisma/extension-accelerate@2.0.1':
+    resolution: {integrity: sha512-KSQlLC5F1qxFQCqSP8SnCwhkv9SE40v8WR+UjHdRce0R7Fv/K3IfJJNANGFx5MNoOypK1VN6wfvRr6CNA/l+BQ==}
+    engines: {node: '>=18'}
+    peerDependencies:
+      '@prisma/client': '>=4.16.1'
+
+  cross-fetch@4.1.0:
+    resolution: {integrity: sha512-uKm5PU+MHTootlWEY+mZ4vvXoCn4fLQxT9dSc1sXVMSFkINTJVN8cAQROpwcKm8bJ/c7rgZVIBWzH5T78sNZZw==}
+
+  eventemitter3@5.0.1:
+    resolution: {integrity: sha512-GWkBvjiSZK87ELrYOSESUYeVIc9mvLLf/nXalMOS5dYrgZq9o5OVkbZAVM06CVxYsCwH9BDZFPlQTlPA1j4ahA==}
+
+  leetcode-query@2.0.0:
+    resolution: {integrity: sha512-kIX2YZq/XTRx53VObr4D39u9nSEnBUl3aCoYQEzTusuo97Oo3EfjryvyN6esqwqtfYa2AeSy/glsKVVxyTAcXw==}
+
+  node-fetch@2.7.0:
+    resolution: {integrity: sha512-c4FRfUm/dbcWZ7U+1Wq0AwCyFL+3nt2bEw05wfxSz+DWpWsitgmSgYmy2dQdWyKC1694ELPqMs/YzUSNozLt8A==}
+    engines: {node: 4.x || >=6.0.0}
+    peerDependencies:
+      encoding: ^0.1.0
+    peerDependenciesMeta:
+      encoding:
+        optional: true
+
+  tr46@0.0.3:
+    resolution: {integrity: sha512-N3WMsuqV66lT30CrXNbEjx4GEwlow3v6rr4mCcv6prnfwhS01rkgyFdjPNBYd9br7LpXV1+Emh01fHnq2Gdgrw==}
+
+  webidl-conversions@3.0.1:
+    resolution: {integrity: sha512-2JAn3z8AR6rjK8Sm8orRC0h/bcl/DqL7tRPdGZ4I1CjdF+EaMLmYxBHyXuKL849eucPFhvBoxMsflfOb8kxaeQ==}
+
+  whatwg-url@5.0.0:
+    resolution: {integrity: sha512-saE57nupxk6v3HY35+jzBwYa0rKSy0XR8JSxZPwgLr7ys0IBzhGviA1/TUGJLmSVqs8pb9AnvICXEuOHLprYTw==}
+
+snapshots:
+
+  '@fetch-impl/cross-fetch@1.0.0(@fetch-impl/fetcher@1.0.0)(cross-fetch@4.1.0)':
+    dependencies:
+      '@fetch-impl/fetcher': 1.0.0
+      cross-fetch: 4.1.0
+
+  '@fetch-impl/fetcher@1.0.0': {}
+
+  '@prisma/client@6.10.0': {}
+
+  '@prisma/extension-accelerate@2.0.1(@prisma/client@6.10.0)':
+    dependencies:
+      '@prisma/client': 6.10.0
+
+  cross-fetch@4.1.0:
+    dependencies:
+      node-fetch: 2.7.0
+    transitivePeerDependencies:
+      - encoding
+
+  eventemitter3@5.0.1: {}
+
+  leetcode-query@2.0.0:
+    dependencies:
+      '@fetch-impl/cross-fetch': 1.0.0(@fetch-impl/fetcher@1.0.0)(cross-fetch@4.1.0)
+      '@fetch-impl/fetcher': 1.0.0
+      cross-fetch: 4.1.0
+      eventemitter3: 5.0.1
+    transitivePeerDependencies:
+      - encoding
+
+  node-fetch@2.7.0:
+    dependencies:
+      whatwg-url: 5.0.0
+
+  tr46@0.0.3: {}
+
+  webidl-conversions@3.0.1: {}
+
+  whatwg-url@5.0.0:
+    dependencies:
+      tr46: 0.0.3
+      webidl-conversions: 3.0.1

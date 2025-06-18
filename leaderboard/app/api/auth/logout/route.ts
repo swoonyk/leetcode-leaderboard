@@ -4,7 +4,7 @@ import { cookies } from "next/headers"
 export async function POST() {
   try {
     const cookieStore = cookies()
-    cookieStore.delete("username")
+    cookieStore.delete("session")
 
     return NextResponse.json({ success: true })
   } catch (error) {

@@ -18,8 +18,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'User not found. Please sign up first.' }, { status: 401 });
     }
 
+    const sessionToken = `${Date.now()}_${username}`;
+
     const cookieStore = cookies();
-    cookieStore.set('username', username, {
+    cookieStore.set('session', sessionToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
@@ -27,7 +29,7 @@ export async function POST(request: NextRequest) {
       path: '/',
     });
 
-    return NextResponse.json({ success: true, username });
+    return NextResponse.json({ success: true, username, sessionToken });
   } catch (error) {
     console.error(error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });

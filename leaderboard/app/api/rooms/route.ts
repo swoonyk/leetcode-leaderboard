@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
-import { getSessionUser } from '../../lib/session';
 import { prisma } from '@/lib/prisma';
+import { getSessionUser } from '@/app/lib/session';
 
 const generateCode = (length = 6) => {
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';

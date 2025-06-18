@@ -1,7 +1,7 @@
-import { NextResponse, type NextRequest } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { NextResponse, type NextRequest } from 'next/server';
 import { z } from 'zod';
-import { getSessionUser } from '@/lib/session';
+import { getSessionUser } from '@/app/lib/session';
 import type { User } from '@/lib/types';
 import { COMPETITION_START } from '@/lib/constants';
 import { lc, getProblemDifficulties } from '@/lib/leetcode';

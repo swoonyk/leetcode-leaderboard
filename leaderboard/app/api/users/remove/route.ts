@@ -34,6 +34,7 @@ export async function POST(request: Request) {
 
     // Delete user and their cached stats in a transaction
     await prisma.$transaction([
+      prisma.membership.deleteMany({ where: { userId: userToDelete.id } }),
       prisma.statsCache.deleteMany({ where: { username } }),
       prisma.user.delete({ where: { username } }),
     ]);

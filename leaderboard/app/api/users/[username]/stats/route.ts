@@ -1,5 +1,5 @@
-import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { NextResponse } from 'next/server';
 import type { User } from '@/lib/types';
 import { COMPETITION_START } from '@/lib/constants';
 import { lc, getProblemDifficulties } from '@/lib/leetcode';
